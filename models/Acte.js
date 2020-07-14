@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const famille = require('./Famille');
 
-const UserSchema = new Schema({
-    name: {
+const acteSchema = new Schema({
+    libelle: {
         type: String,
         required: true
     },
@@ -12,18 +13,19 @@ const UserSchema = new Schema({
         required: true
     },
 
-    password: {
+    typeprix: {
         type: String,
         required: true
     },
 
-    fonction: {
-        type: String,
-        required: true
-    },
-
-    niveau: {
+    prix: {
         type: Number,
+        required: true
+    },
+
+    familles: { 
+        type: Schema.Types.ObjectId, 
+        ref: famille,
         required: true
     },
 
@@ -32,10 +34,10 @@ const UserSchema = new Schema({
         required: true
     },
 
-    date: {
-        type: Date,
-        default: Date.now
+    duree: {
+        type: Number,
+        required: true
     }
 });
 
-module.exports = User = mongoose.model("users", UserSchema);
+module.exports = Acte = mongoose.model("actes", acteSchema);

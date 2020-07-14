@@ -6,6 +6,7 @@ const keys = require("../../config/config");
 
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
+const validateUserInfoUpdate = require("../../validation/updateInfo");
 
 const User = require("../../models/User");
 
@@ -20,15 +21,18 @@ router.post("/register" , (req, res) => {
 
     //console.log(req);
 
-    User.findOne({ email: req.body.email }).then(user => {
+    User.findOne({ code: req.body.code }).then(user => {
         //console.log(req);
         if(user){
-            return res.status(400).json({ email: "Cet Email existe déjà "});
+            return res.status(400).json({ code: "Ce Code existe déjà "});
         }else{
             const newUser = new User({
                 name: req.body.name,
-                email: req.body.email,
-                password: req.body.password
+                code: req.body.code,
+                password: req.body.password,
+                fonction: req.body.fonction,
+                niveau: req.body.niveau,
+                etat: 1
             });
 
             bcrypt.genSalt(10, (err, salt) => {
@@ -102,6 +106,46 @@ router.all("/all", (req, res) => {
     User.find({}).then(Users => {
         res.send(Users);
     })
+
+});
+
+router.get("/get", (req, res) => {
+
+    User.findById(req.query.id).then(user => {
+        res.send(user);
+    })
+
+});
+
+router.get("/updateInfos", (req, res) => {
+
+    const { errors, isValid } = validateUserInfoUpdate(req.body);
+
+    console.log(validateUserInfoUpdate(req.body))
+
+    if(!isValid){
+        return res.status(404).json(errors);
+    }
+
+    User.findByIdAndUpdate(
+        { _id: "5f0d9eaa211ca809a824de98" },
+        {
+            $set:{
+                name: req.body.name,
+                fonction: req.body.fonction,
+                niveau: req.body.niveau,
+                etat: 1
+            }
+        },
+        {new:true},
+        function(err, result) {
+          if (err) {
+            res.send(err);
+          } else {
+            res.send(result);
+          }
+        }
+      );
 
 });
 

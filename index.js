@@ -9,6 +9,8 @@ const passport = require("passport");
  * Models load
  */
 const users = require("./routes/api/users");
+const famille = require("./routes/api/famille");
+const acte = require("./routes/api/acte");
 /**
  * Database Parameters load
  */
@@ -52,13 +54,17 @@ require("./config/passport")(passport);
  */
 
 app.get("/", (req, res) => {
-    res.status(200).send("WHATABYTE: Food For Devs");
+    res.status(200).send("Welcome to Egreffe");
 });
+
+app.use("/api/users", users);
+app.use("/api/famille", famille);
+app.use("/api/acte", acte);
 
 /**
  * Server Activation
  */
 
-const port = process.env.PORT || "8000";
+const port = process.env.PORT || "5000";
 
 app.listen(port, () => console.log('Server up and running!'));
