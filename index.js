@@ -11,6 +11,8 @@ const passport = require("passport");
 const users = require("./routes/api/users");
 const famille = require("./routes/api/famille");
 const acte = require("./routes/api/acte");
+const caisse = require("./routes/api/caisse");
+const argent = require("./routes/api/argent");
 /**
  * Database Parameters load
  */
@@ -60,6 +62,8 @@ app.get("/", (req, res) => {
 app.use("/api/users", users);
 app.use("/api/famille", famille);
 app.use("/api/acte", acte);
+app.use("/api/caisse", caisse);
+app.use("/api/argent", argent);
 
 /**
  * Server Activation

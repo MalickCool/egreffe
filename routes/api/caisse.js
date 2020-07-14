@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const validate = require("../../validation/famille/insert");
+const validate = require("../../validation/caisse/insert");
 
-const Famille = require("../../models/Famille");
+const Caisse = require("../../models/Caisse");
 
 router.post("/register" , (req, res) => {
     const { errors, isValid } = validate(req.body);
@@ -16,19 +16,19 @@ router.post("/register" , (req, res) => {
 
     //console.log(req);
 
-    Famille.findOne({ code: req.body.code }).then(famille => {
+    Caisse.findOne({ code: req.body.code }).then(caisse => {
         //console.log(req);
-        if(famille){
-            return res.status(400).json({ code: "Cette famille existe déjà "});
+        if(caisse){
+            return res.status(400).json({ code: "Cette Caisse existe déjà "});
         }else{
-            const newFamilly = new Famille({
+            const newItem = new Caisse({
                 libelle: req.body.libelle,
                 code: req.body.code,
             });
 
-            newFamilly
+            newItem
                 .save()
-                .then(famille => res.json(famille))
+                .then(caissee => res.json(caissee))
                 .catch(err => console.log(err));
         }
     });
@@ -37,16 +37,16 @@ router.post("/register" , (req, res) => {
 
 router.all("/all", (req, res) => {
 
-    Famille.find({}).then(Familles => {
-        res.send(Familles);
+    Caisse.find({}).then(caisses => {
+        res.send(caisses);
     })
 
 });
 
 router.get("/get", (req, res) => {
 
-    Famille.findById(req.query.id).then(theFamilly => {
-        res.send(theFamilly);
+    Caisse.findById(req.query.id).then(theItem => {
+        res.send(theItem);
     })
 
 });
@@ -61,7 +61,7 @@ router.post("/update", (req, res) => {
         return res.status(404).json(errors);
     }
 
-    Famille.findByIdAndUpdate(
+    Caisse.findByIdAndUpdate(
         { _id: req.body.id },
         {
             $set:{
@@ -71,30 +71,30 @@ router.post("/update", (req, res) => {
         },
         {new:true},
         function(err, result) {
-          if (err) {
-            res.send(err);
-          } else {
-            res.send(result);
-          }
+            if (err) {
+                res.send(err);
+            } else {
+                res.send(result);
+            }
         }
-      );
+    );
 
 });
 
 router.get("/delete", (req, res) => {
 
-    Famille.findById(req.query.id)
-        .then(theFamilly => {
-            if(theFamilly !== null){
-                Famille.findByIdAndRemove(theFamilly._id)
+    Caisse.findById(req.query.id)
+        .then(theItem => {
+            if(theItem !== null){
+                Caisse.findByIdAndRemove(theItem._id)
                 .then(data => {
-                    res.send("Famille supprimée avec succès");
+                    res.send("Caisse supprimée avec succès");
                 })
                 .catch(err => {
-                    res.send("Impossible de supprimer la famille");
+                    res.send("Impossible de supprimer la caisse");
                 });
             }else{
-                res.send("Cette famille n'existe pas");
+                res.send("Cette caisse n'existe pas");
             }
         })
         .catch(err => console.log(err));
