@@ -13,6 +13,8 @@ const famille = require("./routes/api/famille");
 const acte = require("./routes/api/acte");
 const caisse = require("./routes/api/caisse");
 const argent = require("./routes/api/argent");
+const actioncaisse = require("./routes/api/actioncaisse");
+const vente = require("./routes/api/vente");
 /**
  * Database Parameters load
  */
@@ -39,7 +41,11 @@ app.use(
 mongoose
     .connect(
         db,
-        { useNewUrlParser: true }
+        { 
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        }
+        
     )
     .then(() => console.log("MongoDB successfuly connected"))
     .catch(err => console.log(err));
@@ -64,6 +70,8 @@ app.use("/api/famille", famille);
 app.use("/api/acte", acte);
 app.use("/api/caisse", caisse);
 app.use("/api/argent", argent);
+app.use("/api/actioncaisse", actioncaisse);
+app.use("/api/vente", vente);
 
 /**
  * Server Activation
