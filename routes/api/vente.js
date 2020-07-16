@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const moment = require('moment');
 
 const validate = require("../../validation/Vente/insert");
 
 const Vente = require("../../models/Vente");
-const Actioncaisse = require("../../models/Actioncaisse");
 const Acte = require("../../models/Acte");
 
 router.post("/register" , (req, res) => {
@@ -28,7 +28,7 @@ router.post("/register" , (req, res) => {
                 typereglement: req.body.typereglement,
                 acte: req.body.acte,
                 actioncaisse: req.body.actioncaisse,
-                etat: 1,
+                etat: 0,
                 pu: req.body.pu
             });
 
@@ -51,15 +51,43 @@ router.all("/all", (req, res) => {
 
 });
 
-router.get("/get", (req, res) => {
+router.all("/todaySells", (req, res) => {
 
-    Acte.findById(req.query.id).populate('familles').then(theActe => {
-        res.send(theActe);
+    const today = moment().format("YYYY-MM-DD");
+
+    Vente.find({ datevente: today }).populate("acte").populate("actioncaisse").then(ventes => {
+        res.send(ventes);
     })
 
 });
 
-router.post("/update", (req, res) => {
+router.get("/sellsByActioncaisse", (req, res) => {
+
+    Vente.find({ actioncaisse: req.query.idac }).populate("acte").populate("actioncaisse").then(ventes => {
+        res.send(ventes);
+    })
+
+});
+
+router.get("/getSolde", (req, res) => {
+    Vente.find({ actioncaisse: req.query.idac }).then(function (ventes){
+        let somme = 0;
+        ventes.forEach(function(vente){
+            somme += vente.montant;
+        })
+        res.status(200).send((somme).toString());
+    })
+});
+
+router.get("/get", (req, res) => {
+
+    Vente.findById(req.query.id).populate('acte').then(theVente => {
+        res.send(theVente);
+    })
+
+});
+
+router.get("/annuler", (req, res) => {
 
     const { errors, isValid } = validate(req.body);
 
@@ -69,17 +97,11 @@ router.post("/update", (req, res) => {
         return res.status(404).json(errors);
     }
 
-    Acte.findByIdAndUpdate(
-        { _id: req.body.id },
+    Vente.findByIdAndUpdate(
+        { _id: req.query.id },
         {
             $set:{
-                libelle: req.body.libelle,
-                code: req.body.code,
-                typeprix: req.body.typeprix,
-                prix: req.body.prix,
-                familles: req.body.famille_id,
-                etat: 1,
-                duree: req.body.duree
+                etat: 1
             }
         },
         {new:true},
@@ -92,25 +114,6 @@ router.post("/update", (req, res) => {
         }
       );
 
-});
-
-router.get("/delete", (req, res) => {
-
-    Acte.findById(req.query.id)
-        .then(theActe => {
-            if(theActe !== null){
-                Acte.findByIdAndRemove(theActe._id)
-                .then(data => {
-                    res.send("Acte supprimée avec succès");
-                })
-                .catch(err => {
-                    res.send("Impossible de supprimer l'acte");
-                });
-            }else{
-                res.send("Cet acte n'existe pas");
-            }
-        })
-        .catch(err => console.log(err));
 });
 
 module.exports = router;
