@@ -60,19 +60,21 @@ router.post("/login", (req, res) => {
     }
 
 
-    const email = req.body.email;
+    const code = req.body.code;
     const password = req.body.password;
 
-    User.findOne({ email }).then(user => {
+    User.findOne({ code }).then(user => {
 
         if(!user){
-            return res.status(400).json({ emailnotfound: "Cet Email n'existe pas dans notre Base de Données"});
+            return res.status(400).json({ emailnotfound: "Cet Utilisateur n'existe pas dans notre Base de Données"});
         }else{
             bcrypt.compare(password, user.password).then(isMatch => {
                 if(isMatch){
                     const payload = {
                         id: user.id,
-                        name: user.name
+                        name: user.name,
+                        code: user.code,
+                        niveau: user.niveau
                     };
     
                     jwt.sign(
@@ -91,7 +93,7 @@ router.post("/login", (req, res) => {
                 } else {
                     return res
                         .status(400)
-                        .json({ passwordincorrect: "Mot de Passe Incorrecte" });
+                        .json({ password: "Mot de Passe Incorrecte" });
                 }
             });
         }
